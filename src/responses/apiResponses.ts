@@ -1,8 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { User } from './User';
 import { ErrorMessage } from './ErrorMessage';
+import { Users } from './Users';
 
-const users: User[] = [];
+const users: Users = {};
 
 const getUsers = (request: IncomingMessage, response: ServerResponse) => {
   const json = JSON.stringify(users);
@@ -59,13 +60,10 @@ const badRequest = (
 const updateUser = (
   request: IncomingMessage,
   response: ServerResponse,
-  updateIndex: number,
   incomingUser: User,
 ) => {
-  const user = users[updateIndex];
-
-  user.age = incomingUser.age;
-  user.times!.lastUpdated = Date.now();
+  users[incomingUser.name].age = incomingUser.age;
+  users[incomingUser.name].times!.lastUpdated = Date.now();
 
   response.writeHead(204, 'Updated');
   return response.end();
@@ -83,17 +81,15 @@ const addUser = (request: IncomingMessage, response: ServerResponse) => {
     } as ErrorMessage);
   }
 
-  const curIndex = users.findIndex((user) => user.name === incomingUser.name);
-
-  if (curIndex !== -1) {
-    return updateUser(request, response, curIndex, incomingUser);
+  if (users[incomingUser.name]) {
+    return updateUser(request, response, incomingUser);
   }
 
   incomingUser.times = {
     created: Date.now(),
     lastUpdated: Date.now(),
   };
-  users.push(incomingUser);
+  users[incomingUser.name] = incomingUser;
 
   const message = JSON.stringify({ message: 'Created Successfully' });
 

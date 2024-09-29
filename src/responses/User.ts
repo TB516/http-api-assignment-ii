@@ -1,5 +1,5 @@
 export interface User{
-  name?: string,
+  name: string,
   age: number,
   times?: {
     created: number,
