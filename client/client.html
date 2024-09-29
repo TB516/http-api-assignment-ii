@@ -3,9 +3,48 @@
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
   <script>
+    const sendRequest = async (url, requestMethod) => {
+      const section = document.getElementById('content');
+      const response = await fetch(url, {
+        method: requestMethod,
+      });
 
+      section.innerHTML = `<div>${response.statusText}</div>`;
+
+      if (requestMethod === 'get' && response.ok) {
+        const json = await response.json();
+        section.innerHTML += `<div>${JSON.stringify(json)}</div>`;
+      }
+      else if ((requestMethod === 'post' && response.status !== 204) || !response.ok) {
+        const json = await response.json();
+        section.innerHTML += `<div>Message: ${JSON.stringify(json.message)}</div>`;
+      }
+  }
+    
+    const addUser = (event) => {
+      event.preventDefault();
+
+      const name = document.getElementById('nameField').value;
+      const age = document.getElementById('ageField').value;
+
+      sendRequest(`/addUser?name=${name}&age=${age}`, 'post');
+    }
+
+    const getUser = (event) => {
+      event.preventDefault();
+
+      sendRequest(
+        document.getElementById('urlField').value,
+        document.getElementById('methodSelect').value);
+    }
+
+    const init = () => {
+      document.getElementById('nameForm').onsubmit = addUser;
+      document.getElementById('userForm').onsubmit = getUser;
+    }
+
+    window.onload = init;
   </script>
 </head>
 <body>
