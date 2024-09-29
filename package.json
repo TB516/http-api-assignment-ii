@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx nodemon",
     "build": "rimraf ./dist && tsc",
-    "start": "npm run build && node dist/server.js",
+    "start": "node dist/server.js",
     "pretest": "npm run lint",
     "test": "echo 'Tests Complete'",
     "lint": "eslint ./src . --ext .ts --fix"
